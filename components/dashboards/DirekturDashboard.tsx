@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  TrendingUp, 
-  Users, 
-  FileText, 
+import { useRouter } from 'next/navigation';
+import { direkturExecutiveStats, direkturPendingApprovals, direkturDepartmentPerformance } from '@/data/dashboard';
+import {
+  TrendingUp,
+  Users,
+  FileText,
   Clock,
   Award,
   AlertCircle,
@@ -16,98 +18,18 @@ import {
 
 export default function DirekturDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [approvedDocs, setApprovedDocs] = useState<number[]>([]);
+  const router = useRouter();
 
-  const executiveStats = [
-    {
-      title: 'Total Keputusan Bulan Ini',
-      value: '47',
-      change: '+8%',
-      changeType: 'increase',
-      icon: <Award className="w-8 h-8 text-blue-600" />,
-      color: 'bg-blue-50 border-blue-200'
-    },
-    {
-      title: 'Dokumen Menunggu',
-      value: '5',
-      change: 'Urgent',
-      changeType: 'warning',
-      icon: <Clock className="w-8 h-8 text-red-600" />,
-      color: 'bg-red-50 border-red-200'
-    },
-    {
-      title: 'Efisiensi Proses',
-      value: '92%',
-      change: '+5%',
-      changeType: 'increase',
-      icon: <TrendingUp className="w-8 h-8 text-green-600" />,
-      color: 'bg-green-50 border-green-200'
-    },
-    {
-      title: 'Tim Aktif',
-      value: '24',
-      change: '100%',
-      changeType: 'stable',
-      icon: <Users className="w-8 h-8 text-purple-600" />,
-      color: 'bg-purple-50 border-purple-200'
-    }
-  ];
+  const handleApprove = (e: React.MouseEvent, docId: number) => {
+    e.stopPropagation();
+    setApprovedDocs((prev) => [...prev, docId]);
+    router.push('/status/success');
+  };
 
-  const pendingApprovals = [
-    {
-      id: 1,
-      title: 'Permohonan Anggaran Proyek IT',
-      department: 'Bagian IT',
-      amount: 'Rp 150.000.000',
-      priority: 'high',
-      submitDate: '2025-01-23',
-      deadline: '2025-01-25'
-    },
-    {
-      id: 2,
-      title: 'Kebijakan Kerja Remote',
-      department: 'HR',
-      amount: '-',
-      priority: 'medium',
-      submitDate: '2025-01-22',
-      deadline: '2025-01-30'
-    },
-    {
-      id: 3,
-      title: 'Kontrak Vendor Catering',
-      department: 'Bagian Umum',
-      amount: 'Rp 25.000.000',
-      priority: 'normal',
-      submitDate: '2025-01-21',
-      deadline: '2025-01-28'
-    }
-  ];
-
-  const departmentPerformance = [
-    {
-      name: 'Bagian Umum',
-      completed: 95,
-      pending: 3,
-      efficiency: 92
-    },
-    {
-      name: 'ADC',
-      completed: 88,
-      pending: 5,
-      efficiency: 89
-    },
-    {
-      name: 'Keuangan',
-      completed: 97,
-      pending: 2,
-      efficiency: 96
-    },
-    {
-      name: 'IT',
-      completed: 85,
-      pending: 8,
-      efficiency: 87
-    }
-  ];
+  const executiveStats = direkturExecutiveStats;
+  const pendingApprovals = direkturPendingApprovals;
+  const departmentPerformance = direkturDepartmentPerformance;
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -194,10 +116,10 @@ export default function DirekturDashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* Pending Approvals */}
-        <div className="lg:col-span-2">
-          <div className="card">
+        <div className="w-full lg:w-2/3">
+          <div className="card h-full">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-3">
                 <h2 className="text-lg font-semibold text-neutral-800">Persetujuan Tertunda</h2>
@@ -215,6 +137,7 @@ export default function DirekturDashboard() {
                 <div 
                   key={item.id} 
                   className={`p-4 rounded-lg border-l-4 ${getPriorityColor(item.priority)} transition-all hover:shadow-md cursor-pointer`}
+                  onClick={() => router.push(`/surat-detail?id=${item.id}`)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -240,10 +163,19 @@ export default function DirekturDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
-                      <button className="btn-secondary text-sm px-3 py-1">
+                      <button 
+                        className="btn-secondary text-sm px-3 py-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/surat-detail?id=${item.id}`);
+                        }}
+                      >
                         Review
                       </button>
-                      <button className="btn-primary text-sm px-3 py-1">
+                      <button 
+                        className="btn-primary text-sm px-3 py-1"
+                        onClick={(e) => handleApprove(e, item.id)}
+                      >
                         Setujui
                       </button>
                     </div>
@@ -255,7 +187,7 @@ export default function DirekturDashboard() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="w-full lg:w-1/3 flex flex-col gap-6">
           {/* Department Performance */}
           <div className="card">
             <h2 className="text-lg font-semibold text-neutral-800 mb-4">Performa Departemen</h2>

@@ -1,3 +1,4 @@
+import { SuratProvider } from '@/context/SuratContext';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -15,11 +16,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="id">
-      <body className={inter.className}>
-        {children}
-        <Toaster position="top-right" />
+    return (
+    <html lang="en">
+      <body>
+        <SuratProvider>
+          {children}
+        </SuratProvider>
       </body>
     </html>
   );

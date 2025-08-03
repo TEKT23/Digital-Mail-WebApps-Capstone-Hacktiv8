@@ -8,7 +8,7 @@ const replicate = new Replicate({
 });
 
 export async function POST(request: NextRequest) {
-  let message: string;
+  let message: string = '';
   
   try {
     const body = await request.json();

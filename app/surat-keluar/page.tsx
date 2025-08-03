@@ -23,19 +23,8 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-interface SuratKeluar {
-  id: string;
-  nomor: string;
-  tujuan: string;
-  perihal: string;
-  tanggalSurat: string;
-  tanggalKirim?: string;
-  status: 'draft' | 'review' | 'approved' | 'sent';
-  prioritas: 'rendah' | 'normal' | 'tinggi' | 'urgent';
-  lampiran: boolean;
-  pembuat: string;
-  reviewer?: string;
-}
+import { SuratKeluar } from '@/interface/suratKeluar';
+import suratKeluarData from '@/data/suratKeluar';
 
 export default function SuratKeluarPage() {
   const [userRole, setUserRole] = useState<string>('');
@@ -57,43 +46,7 @@ export default function SuratKeluarPage() {
   });
   const router = useRouter();
 
-  const [suratKeluar] = useState<SuratKeluar[]>([
-    {
-      id: '1',
-      nomor: 'SK/001/2025',
-      tujuan: 'PT. Teknologi Maju',
-      perihal: 'Balasan Permohonan Kerjasama',
-      tanggalSurat: '2025-01-23',
-      tanggalKirim: '2025-01-23',
-      status: 'sent',
-      prioritas: 'tinggi',
-      lampiran: true,
-      pembuat: 'Bagian Umum',
-      reviewer: 'Direktur'
-    },
-    {
-      id: '2',
-      nomor: 'SK/002/2025',
-      tujuan: 'Seluruh Karyawan',
-      perihal: 'Pemberitahuan Kebijakan Kerja Remote',
-      tanggalSurat: '2025-01-23',
-      status: 'review',
-      prioritas: 'normal',
-      lampiran: false,
-      pembuat: 'ADC'
-    },
-    {
-      id: '3',
-      nomor: 'SK/003/2025',
-      tujuan: 'Dinas Pendidikan Kota',
-      perihal: 'Konfirmasi Kehadiran Rapat',
-      tanggalSurat: '2025-01-22',
-      status: 'draft',
-      prioritas: 'normal',
-      lampiran: false,
-      pembuat: 'Bagian Umum'
-    }
-  ]);
+  const [suratKeluar] = useState<SuratKeluar[]>(suratKeluarData);
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -243,7 +196,7 @@ export default function SuratKeluarPage() {
           {filteredSurat.map((surat) => (
             <div key={surat.id} className="card hover:shadow-md transition-all cursor-pointer">
               <div className="flex items-start justify-between">
-                <div className="flex-1">
+                <div className="flex-1" onClick={() => router.push(`/surat-detail?id=${surat.id}`)}>
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="font-semibold text-neutral-800">{surat.perihal}</h3>
                     {getStatusBadge(surat.status)}

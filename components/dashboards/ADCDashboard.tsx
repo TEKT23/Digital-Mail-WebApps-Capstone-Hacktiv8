@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   FileText, 
   Users, 
@@ -11,95 +12,15 @@ import {
   Download,
   Calendar
 } from 'lucide-react';
+import { adcStats, adcWorkflows, adcRecentActivities } from '@/data/dashboard';
 
 export default function ADCDashboard() {
   const [selectedView, setSelectedView] = useState('overview');
+  const router = useRouter();
 
-  const stats = [
-    {
-      title: 'Total Dokumen Bulan Ini',
-      value: '127',
-      change: '+12%',
-      changeType: 'increase',
-      icon: <FileText className="w-8 h-8 text-blue-600" />,
-      color: 'bg-blue-50 border-blue-200'
-    },
-    {
-      title: 'Koordinasi Aktif',
-      value: '8',
-      change: '+2 baru',
-      changeType: 'increase',
-      icon: <Users className="w-8 h-8 text-green-600" />,
-      color: 'bg-green-50 border-green-200'
-    },
-    {
-      title: 'Rata-rata Waktu Proses',
-      value: '2.3 hari',
-      change: '-0.5 hari',
-      changeType: 'decrease',
-      icon: <Clock className="w-8 h-8 text-yellow-600" />,
-      color: 'bg-yellow-50 border-yellow-200'
-    },
-    {
-      title: 'Tingkat Penyelesaian',
-      value: '94%',
-      change: '+3%',
-      changeType: 'increase',
-      icon: <CheckCircle className="w-8 h-8 text-purple-600" />,
-      color: 'bg-purple-50 border-purple-200'
-    }
-  ];
-
-  const workflows = [
-    {
-      id: 1,
-      title: 'Alur Persetujuan Cuti',
-      department: 'Bagian Umum → ADC → Direktur',
-      status: 'active',
-      documents: 15,
-      avgTime: '1.2 hari'
-    },
-    {
-      id: 2,
-      title: 'Proses Pengadaan Barang',
-      department: 'Bagian Umum → ADC → Direktur',
-      status: 'active',
-      documents: 8,
-      avgTime: '3.5 hari'
-    },
-    {
-      id: 3,
-      title: 'Laporan Keuangan',
-      department: 'Keuangan → ADC → Direktur',
-      status: 'review',
-      documents: 4,
-      avgTime: '2.1 hari'
-    }
-  ];
-
-  const recentActivities = [
-    {
-      id: 1,
-      action: 'Meneruskan surat permohonan cuti',
-      user: 'Ahmad Sutrisno',
-      timestamp: '2 jam yang lalu',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      action: 'Koordinasi revisi dokumen',
-      user: 'Siti Rahayu',
-      timestamp: '4 jam yang lalu',
-      status: 'pending'
-    },
-    {
-      id: 3,
-      action: 'Menyelesaikan review laporan',
-      user: 'Budi Santoso',
-      timestamp: '6 jam yang lalu',
-      status: 'completed'
-    }
-  ];
+  const stats = adcStats;
+  const workflows = adcWorkflows;
+  const recentActivities = adcRecentActivities;
 
   return (
     <div className="space-y-8">
@@ -147,14 +68,14 @@ export default function ADCDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* Workflow Management */}
-        <div className="lg:col-span-2">
-          <div className="card">
+        <div className="w-full lg:w-2/3">
+          <div className="card h-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-neutral-800">Manajemen Alur Kerja</h2>
               <div className="flex items-center space-x-2">
-                <button className="btn-secondary text-sm">
+                <button className="btn-secondary text-sm flex items-center">
                   <Filter className="w-4 h-4 mr-2" />
                   Filter
                 </button>
@@ -166,7 +87,7 @@ export default function ADCDashboard() {
             
             <div className="space-y-4">
               {workflows.map((workflow) => (
-                <div key={workflow.id} className="p-4 border border-neutral-200 rounded-lg hover:shadow-md transition-all">
+                <div key={workflow.id} className="p-4 border border-neutral-200 rounded-lg hover:shadow-md transition-all cursor-pointer" onClick={() => router.push(`/surat-detail?id=${workflow.id}`)}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
@@ -198,7 +119,7 @@ export default function ADCDashboard() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="w-full lg:w-1/3 flex flex-col gap-6">
           {/* Performance Chart */}
           <div className="card">
             <h2 className="text-lg font-semibold text-neutral-800 mb-4">Performa Minggu Ini</h2>
@@ -234,7 +155,7 @@ export default function ADCDashboard() {
             <h2 className="text-lg font-semibold text-neutral-800 mb-4">Aktivitas Terbaru</h2>
             <div className="space-y-4">
               {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3">
+                <div key={activity.id} className="flex items-start space-x-3 cursor-pointer" onClick={() => router.push(`/surat-detail?id=${activity.id}`)}>
                   <div className={`w-2 h-2 rounded-full mt-2 ${
                     activity.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'
                   }`}></div>
